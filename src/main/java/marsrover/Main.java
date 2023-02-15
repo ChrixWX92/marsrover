@@ -3,6 +3,7 @@ package marsrover;
 import javafx.application.Application;
 import javafx.application.Platform;
 import marsrover.menu.menus.WelcomePane;
+import marsrover.model.Movement;
 import marsrover.model.Xform;
 
 import javax.swing.*;
@@ -68,9 +69,7 @@ public class Main extends Application {
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
 
-//                    frame.dispose();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-                    String[] args;
                     int[] coords;
                     int[] roverCoords;
                     while (true) {
@@ -89,14 +88,16 @@ public class Main extends Application {
                             System.out.println("\nERROR: Invalid format, please try again.\n");
                         }
                     }
-                    try {reader.close();} catch (IOException e) {e.printStackTrace();}
+//                    try {reader.close();} catch (IOException e) {e.printStackTrace();}
                     frame.dispose();
                     int[] finalCoords = coords;
                     int[] finalRoverCoords = roverCoords;
                     Main.taskQueue.add(() -> Main.stage.engageControl(finalCoords[0], finalCoords[1], finalRoverCoords[0], finalRoverCoords[1]));
                 }
                 else {
-                    Platform.exit();}
+                    Platform.exit();
+                    System.exit(0);
+                }
             }
 
             private int[] inputCoords(BufferedReader reader) throws IOException {
@@ -150,6 +151,10 @@ public class Main extends Application {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        TerminalThread terminalInput = new TerminalThread(world);
+        Thread terminalThread = new Thread(terminalInput);
+        terminalThread.start();
 
     }
 
