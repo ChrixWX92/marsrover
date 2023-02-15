@@ -7,6 +7,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import marsrover.entity.Movable;
+import marsrover.entity.entities.Rover;
 import marsrover.model.Movement;
 import marsrover.model.Xform;
 import marsrover.terrain.Plateau;
@@ -168,6 +169,9 @@ public class Stage {
 
     public void engageControl(int x, int z) {
         world.setTerrain(new Plateau(x, z));
+        Rover initialRover = new Rover(new int[]{0,0});
+        world.addEntity(initialRover);
+        world.setActiveMovable(initialRover);
         engagePeripheralHandlers();
     }
 

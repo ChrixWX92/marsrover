@@ -1,10 +1,12 @@
 package marsrover.model;
 
+import marsrover.Main;
 import marsrover.entity.Entity;
 import marsrover.model.models.Model;
 import marsrover.terrain.GridSquare;
 import marsrover.terrain.Plateau;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Movement extends Thread {
@@ -116,14 +118,20 @@ public class Movement extends Thread {
         }
         this.xOffset = xOffset;
         this.zOffset = zOffset;
+
+        entity.updateTerrainLocation(this.xOffset, this.zOffset);
+        entity.updateCoordinates(this.xOffset, this.zOffset);
+
+        System.out.println("coords post-movement = " + Arrays.toString(entity.getCoordinates()));
+
     }
 
     public int getxOffset() {
-        return xOffset;
+        return this.xOffset;
     }
 
     public int getzOffset() {
-        return zOffset;
+        return this.zOffset;
     }
 
     public enum MovementType {

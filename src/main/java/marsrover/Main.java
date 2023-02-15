@@ -11,11 +11,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import marsrover.entity.entities.Rover;
 import marsrover.menu.menus.WelcomePane;
-import marsrover.model.Movement;
 import marsrover.model.Xform;
-import marsrover.model.models.RoverModel;
-import marsrover.terrain.Plateau;
-import marsrover.terrain.Terrain;
 
 import javax.swing.*;
 import java.util.concurrent.BlockingQueue;
@@ -82,15 +78,12 @@ public class Main extends Application {
         World world = new World();
 
 //        buildAxes();
-        Rover initialRover = new Rover(new int[]{0,0});
-        world.addEntity(initialRover);
-        world.setActiveMovable(initialRover);
+
         stage.addWorld(world);
         stage.addCamera(new Camera(true));
 
         stage.generateScene();
         stage.buildLight();
-
 
         stage.showPrimaryStage(primaryStage);
 
