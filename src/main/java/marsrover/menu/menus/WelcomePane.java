@@ -1,6 +1,6 @@
-package marsrover;
+package marsrover.menu.menus;
 
-import javafx.stage.WindowEvent;
+import marsrover.Main;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
