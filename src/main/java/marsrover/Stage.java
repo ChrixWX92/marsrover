@@ -6,6 +6,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import marsrover.entity.Entity;
 import marsrover.entity.Movable;
 import marsrover.entity.entities.Rover;
 import marsrover.model.Movement;
@@ -18,7 +19,7 @@ public class Stage {
     private static final double SHIFT_MULTIPLIER = 10.0;
     private static final double MOUSE_SPEED = 0.1;
     private static final double ROTATION_SPEED = 2.0;
-    private static final double TRACK_SPEED = 0.3;
+    private static final double TRACK_SPEED = 3.3;
 
     double mousePosX;
     double mousePosY;
@@ -68,7 +69,7 @@ public class Stage {
             }
             else if (me.isSecondaryButtonDown()) {
                 double z = camera.getPerspectiveCamera().getTranslateZ();
-                double newZ = z + mouseDeltaX*MOUSE_SPEED*modifier;
+                double newZ = z + mouseDeltaX*MOUSE_SPEED*modifier*7;
                 camera.getPerspectiveCamera().setTranslateZ(newZ);
             }
             else if (me.isMiddleButtonDown()) {
@@ -84,7 +85,24 @@ public class Stage {
             @Override
             public void handle(KeyEvent event) {
                 switch (event.getCode()) {
-                    case W:
+                    case L:
+                        // TURN LEFT
+                        try {
+                            subject.move(Movement.MovementType.TURN_LEFT, 90);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case R:
+                        // TURN RIGHT
+                        try {
+                            subject.move(Movement.MovementType.TURN_RIGHT, 90);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case M:
+                        // FORWARD
                         synchronized (this) {
                             try {
                                 subject.move(Movement.MovementType.FORWARD, world.getMovementQuantum());
@@ -93,14 +111,8 @@ public class Stage {
                             }
                         }
                         break;
-                    case A:
-                        try {
-                            subject.move(Movement.MovementType.TURN_LEFT, 90);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    case S:
+                    case B:
+                        // BACKWARD
                         synchronized (this) {
                             try {
                                 subject.move(Movement.MovementType.BACKWARD, world.getMovementQuantum());
@@ -109,15 +121,16 @@ public class Stage {
                             }
                         }
                         break;
+                    case W:
+
+
+                    case A:
+
                     case D:
-                        try {
-                            subject.move(Movement.MovementType.TURN_RIGHT, 90);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        break;
+
                     case Z:
                         camera.reset();
+//                        camera.snapToEntity((Entity) world.getActiveMovable());
                         break;
                     case X:
 //                        axisGroup.setVisible(!axisGroup.isVisible()); TODO: Enable axes
@@ -167,7 +180,7 @@ public class Stage {
         scene.setCamera(camera.camera);
     }
 
-    public void engageControl(int x, int z) {
+    public void engageControl(int x, int z, int roverX, int roverZ) {
         world.setTerrain(new Plateau(x, z));
         Rover initialRover = new Rover(new int[]{0,0});
         world.addEntity(initialRover);

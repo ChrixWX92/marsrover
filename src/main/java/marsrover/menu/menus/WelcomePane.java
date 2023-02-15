@@ -105,7 +105,7 @@ public class WelcomePane extends JFrame implements ActionListener {
 
             Main.rootCoordinates = new int[][]{new int[]{x, z}, new int[]{roverX, roverZ}};
 
-            Main.taskQueue.add(() -> Main.stage.engageControl(x, z));
+            Main.taskQueue.add(() -> Main.stage.engageControl(x, z, 0, 0));
 
             this.dispose();
 
