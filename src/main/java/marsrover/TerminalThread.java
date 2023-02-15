@@ -6,6 +6,7 @@ import java.io.*;
 
 public class TerminalThread implements Runnable {
 
+    public static volatile boolean movementFlag = false;
     World world;
 
     public TerminalThread(World world) {
@@ -13,6 +14,7 @@ public class TerminalThread implements Runnable {
         this.world = world;
     }
 
+    @Override
     public void run() {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         try {
@@ -25,6 +27,11 @@ public class TerminalThread implements Runnable {
                     case 'R' -> Movement.MovementType.TURN_RIGHT;
                     default -> throw new IllegalStateException("Unexpected value: " + instruction);
                 };
+
+                while (movementFlag) {
+                    Thread.onSpinWait();
+                }
+                Thread.sleep(1000);
                 world.getActiveMovable().move(direction, world.getMovementQuantum());
             }
         } catch (IOException | InterruptedException e) {

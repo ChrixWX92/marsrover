@@ -1,6 +1,7 @@
 package marsrover.model;
 
 import marsrover.Main;
+import marsrover.TerminalThread;
 import marsrover.entity.Entity;
 import marsrover.model.models.Model;
 import marsrover.terrain.GridSquare;
@@ -30,6 +31,9 @@ public class Movement extends Thread {
 
     @Override
     public void run() {
+
+        TerminalThread.movementFlag = true;
+
         System.out.println("heading = " + entity.getHeading());
         System.out.println("movement xform address = " + this.xform);
         int xOffset = 0;
@@ -123,6 +127,7 @@ public class Movement extends Thread {
         entity.updateCoordinates(this.xOffset, this.zOffset);
 
         System.out.println("coords post-movement = " + Arrays.toString(entity.getCoordinates()));
+        TerminalThread.movementFlag = false;
 
     }
 
