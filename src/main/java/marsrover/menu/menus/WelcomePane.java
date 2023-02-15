@@ -16,8 +16,10 @@ import javax.swing.text.DocumentFilter;
 public class WelcomePane extends JFrame implements ActionListener {
 
     JLabel intro;
-    JLabel prompt, xLabel, zLabel, roverXLabel, roverZLabel;
+    JLabel prompt, xLabel, zLabel, roverXLabel, roverZLabel, facingLabel;
     JTextField xBox, zBox, roverXBox, roverZBox;
+    JRadioButton northButton, eastButton, southButton, westButton;
+    ButtonGroup buttonGroup;
     JButton button;
     Container container;
 
@@ -45,6 +47,18 @@ public class WelcomePane extends JFrame implements ActionListener {
         roverXBox = new JTextField();
         roverZLabel = new JLabel("Rover Z:");
         roverZBox = new JTextField();
+        roverZLabel = new JLabel("Rover Z:");
+        roverZBox = new JTextField();
+        facingLabel = new JLabel("Rover Facing:");
+        northButton = new JRadioButton("North", true);
+        eastButton = new JRadioButton("East");
+        southButton = new JRadioButton("South");
+        westButton = new JRadioButton("West");
+        buttonGroup = new ButtonGroup();
+        buttonGroup.add(northButton);
+        buttonGroup.add(eastButton);
+        buttonGroup.add(southButton);
+        buttonGroup.add(westButton);
         button = new JButton("Generate Plateau");
         container = getContentPane();
         container.setLayout(null);
@@ -55,17 +69,22 @@ public class WelcomePane extends JFrame implements ActionListener {
     }
 
     public void setBounds() {
-        intro.setBounds(35, 10, 600, 30);
-        prompt.setBounds(62, 60, 600, 30);
-        xLabel.setBounds(70, 110, 100, 30);
-        xBox.setBounds(150, 110, 250, 30);
-        zLabel.setBounds(70, 160, 100, 30);
-        zBox.setBounds(150, 160, 250, 30);
-        roverXLabel.setBounds(70, 210, 100, 30);
-        roverXBox.setBounds(150, 210, 250, 30);
-        roverZLabel.setBounds(70, 260, 100, 30);
-        roverZBox.setBounds(150, 260, 250, 30);
-        button.setBounds(115, 320, 250, 30);
+        intro.setBounds(85, 10, 600, 30);
+        prompt.setBounds(112, 60, 600, 30);
+        xLabel.setBounds(120, 110, 100, 30);
+        xBox.setBounds(200, 110, 250, 30);
+        zLabel.setBounds(120, 160, 100, 30);
+        zBox.setBounds(200, 160, 250, 30);
+        roverXLabel.setBounds(120, 210, 100, 30);
+        roverXBox.setBounds(200, 210, 250, 30);
+        roverZLabel.setBounds(120, 260, 100, 30);
+        roverZBox.setBounds(200, 260, 250, 30);
+        facingLabel.setBounds(55, 310, 100, 30);
+        northButton.setBounds(170, 310, 100, 30);
+        eastButton.setBounds(270, 310, 100, 30);
+        southButton.setBounds(370, 310, 100, 30);
+        westButton.setBounds(470, 310, 100, 30);
+        button.setBounds(165, 370, 250, 30);
     }
 
     public void setFilter() {
@@ -86,6 +105,11 @@ public class WelcomePane extends JFrame implements ActionListener {
         container.add(roverXBox);
         container.add(roverZLabel);
         container.add(roverZBox);
+        container.add(facingLabel);
+        container.add(northButton);
+        container.add(eastButton);
+        container.add(southButton);
+        container.add(westButton);
         container.add(button);
     }
 
@@ -103,7 +127,14 @@ public class WelcomePane extends JFrame implements ActionListener {
             int roverX = roverXBox.getText().length() > 0 ? Integer.parseInt(roverXBox.getText()) : 0;
             int roverZ = roverZBox.getText().length() > 0 ? Integer.parseInt(roverZBox.getText()) : 0;
 
-            Main.taskQueue.add(() -> Main.stage.engageControl(x+1, z+1, roverX, roverZ));
+            char facing = 0;
+            if (northButton.isSelected()) facing = 'N';
+            if (eastButton.isSelected()) facing = 'E';
+            if (southButton.isSelected()) facing = 'S';
+            if (westButton.isSelected()) facing = 'W';
+            char finalFacing = facing;
+            
+            Main.taskQueue.add(() -> Main.stage.engageControl(x+1, z+1, roverX, roverZ, finalFacing));
 
             this.dispose();
         }

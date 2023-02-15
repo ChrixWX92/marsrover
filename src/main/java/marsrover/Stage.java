@@ -180,7 +180,7 @@ public class Stage {
         scene.setCamera(camera.camera);
     }
 
-    public void engageControl(int x, int z, int roverX, int roverZ) {
+    public void engageControl(int x, int z, int roverX, int roverZ, int facing) {
         world.setTerrain(new Plateau(x, z));
         Rover initialRover = new Rover(new int[]{roverX,roverZ});
         world.addEntity(initialRover);

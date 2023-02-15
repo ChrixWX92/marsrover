@@ -57,7 +57,7 @@ public class Main extends Application {
         frame.setTitle("Generate Plateau");
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        frame.setBounds(500, 100, 500, 420);
+        frame.setBounds(600, 250, 600, 470);
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setResizable(false);
 
@@ -91,7 +91,7 @@ public class Main extends Application {
                     frame.dispose();
                     int[] finalCoords = coords;
                     int[] finalRoverCoords = roverCoords;
-                    Main.taskQueue.add(() -> Main.stage.engageControl(finalCoords[0], finalCoords[1], finalRoverCoords[0], finalRoverCoords[1]));
+                    Main.taskQueue.add(() -> Main.stage.engageControl(finalCoords[0], finalCoords[1], finalRoverCoords[0], finalRoverCoords[1], finalRoverCoords[2]));
                 }
                 else {
                     Platform.exit();
