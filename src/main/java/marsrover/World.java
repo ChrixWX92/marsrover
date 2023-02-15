@@ -32,7 +32,7 @@ public class World {
         System.out.println("Setting terrain");
         this.terrain = terrain;
         this.xform.getChildren().add(terrain.build());
-//        System.out.println("terrain build = " +terrain.build());
+        System.out.println("terrain build = " +terrain.build());
         if (this.terrain instanceof Plateau plateau) this.movementQuantum = plateau.getGridSize();
         else {this.movementQuantum = 1;}
         System.out.println("mq = " + movementQuantum);

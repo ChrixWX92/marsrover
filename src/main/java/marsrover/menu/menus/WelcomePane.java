@@ -103,13 +103,11 @@ public class WelcomePane extends JFrame implements ActionListener {
             int roverX = roverXBox.getText().length() > 0 ? Integer.parseInt(roverXBox.getText()) : 0;
             int roverZ = roverZBox.getText().length() > 0 ? Integer.parseInt(roverZBox.getText()) : 0;
 
-            Main.rootCoordinates = new int[][]{new int[]{x, z}, new int[]{roverX, roverZ}};
-
-            Main.taskQueue.add(() -> Main.stage.engageControl(x, z, 0, 0));
+            Main.taskQueue.add(() -> Main.stage.engageControl(x+1, z+1, roverX, roverZ));
 
             this.dispose();
-
         }
+
     }
 
 }

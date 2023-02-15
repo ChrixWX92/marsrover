@@ -14,17 +14,15 @@ public class Rover extends Entity implements Movable {
 
     public Rover(int[] coordinates) {
         super(coordinates, new RoverModel());
-        System.out.println("rover xform address = " + this.model.getXform());
+        if (coordinates[0] > 0) this.model.getXform().setTranslateX(this.getCoordinates()[0]*100);
+        if (coordinates[1] > 0) this.model.getXform().setTranslateZ(this.getCoordinates()[1]*100);
+        updateTerrainLocation(coordinates[0], coordinates[1]);
     }
 
     @Override
     public void move(Movement.MovementType direction, double distance) {
 
-        System.out.println("inmove, terrain = " + this.getSurface());
-
         if (this.getSurface() instanceof Plateau plateau) {
-
-            System.out.println("inif");
 
             int destinationX = this.getCoordinates()[0];
             int destinationZ = this.getCoordinates()[1];

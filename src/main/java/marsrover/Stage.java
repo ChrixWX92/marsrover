@@ -182,7 +182,7 @@ public class Stage {
 
     public void engageControl(int x, int z, int roverX, int roverZ) {
         world.setTerrain(new Plateau(x, z));
-        Rover initialRover = new Rover(new int[]{0,0});
+        Rover initialRover = new Rover(new int[]{roverX,roverZ});
         world.addEntity(initialRover);
         world.setActiveMovable(initialRover);
         engagePeripheralHandlers();
