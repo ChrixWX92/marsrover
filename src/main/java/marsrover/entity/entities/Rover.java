@@ -48,7 +48,14 @@ public class Rover extends Entity implements Movable {
                 }
             }
 
-            if (destinationX < 0 || destinationZ < 0 || plateau.grid.get(destinationX).get(destinationZ) == null || plateau.grid.get(destinationX).get(destinationZ).isOccupied()) {
+            if (
+                    destinationX < 0 ||
+                    destinationZ < 0 ||
+                    destinationX > plateau.grid.size() - 1 ||
+                    destinationZ > plateau.grid.get(0).size() - 1  ||
+                    plateau.grid.get(destinationX).get(destinationZ) == null ||
+                    plateau.grid.get(destinationX).get(destinationZ).isOccupied()
+            ) {
                 System.out.println("COLLISION");
                 // DISALLOWED
                 return;
