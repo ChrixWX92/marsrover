@@ -18,12 +18,18 @@ import marsrover.terrain.Plateau;
 import marsrover.terrain.Terrain;
 
 import javax.swing.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Main extends Application {
 
     final Xform axisGroup = new Xform();
 
+    public static Stage stage;
+
     public static int[][] rootCoordinates;
+
+    public static final BlockingQueue<Runnable> taskQueue = new LinkedBlockingQueue<>();
 
 //    private void buildAxes() {
 //
@@ -72,13 +78,13 @@ public class Main extends Application {
 
         System.out.println("start()");
 
-        Stage stage = new Stage();
+        stage = new Stage();
         World world = new World();
-        world.setTerrain(new Plateau(5, 5));
 
 //        buildAxes();
         Rover initialRover = new Rover(new int[]{0,0});
         world.addEntity(initialRover);
+        world.setActiveMovable(initialRover);
         stage.addWorld(world);
         stage.addCamera(new Camera(true));
 
@@ -93,13 +99,17 @@ public class Main extends Application {
 
         menu();
 
-        world.setActiveMovable(initialRover);
-        stage.engagePeripheralHandlers();
+        try {
+            taskQueue.take().run();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 
     public static void main(String[] args) {
         launch(args);
     }
+
 
 }

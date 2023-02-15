@@ -166,6 +166,11 @@ public class Stage {
         scene.setCamera(camera.camera);
     }
 
+    public void engageControl(int x, int z) {
+        world.setTerrain(new Plateau(x, z));
+        engagePeripheralHandlers();
+    }
+
     public Group getGroup() {
         return group;
     }

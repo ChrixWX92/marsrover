@@ -1,14 +1,7 @@
 package marsrover.terrain;
 
-import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
 import marsrover.entity.Entity;
 import marsrover.model.models.GridModel;
-import marsrover.model.models.Model;
-import marsrover.model.Buildable;
-import marsrover.model.Xform;
 
 import java.util.Arrays;
 
