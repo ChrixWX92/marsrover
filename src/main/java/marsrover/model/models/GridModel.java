@@ -1,20 +1,17 @@
-package marsrover;
+package marsrover.model.models;
 
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import marsrover.model.Xform;
 
-public class Grid extends Model implements Buildable {
+public class GridModel extends Model {
 
-    private boolean occupied = false;
-    private Model occupant;
-    int[] coordinates;
     double size;
 
-    protected Grid(double baseY, int x, int z, double size) {
+    public GridModel(double baseY, double size) {
         super(baseY);
-        this.coordinates = new int[]{x, z};
         this.size = size;
     }
 
@@ -31,19 +28,4 @@ public class Grid extends Model implements Buildable {
         return this.xform;
     }
 
-    public boolean isOccupied() {
-        return occupied;
-    }
-
-    public void setOccupied(boolean occupied) {
-        this.occupied = occupied;
-    }
-
-    public Model getOccupant() {
-        return occupant;
-    }
-
-    public void setOccupant(Model occupant) {
-        this.occupant = occupant;
-    }
 }

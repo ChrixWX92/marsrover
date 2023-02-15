@@ -1,4 +1,4 @@
-package marsrover;
+package marsrover.model.models;
 
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -7,20 +7,20 @@ import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
+import marsrover.model.Xform;
 import org.fxyz3d.shapes.Torus;
 
-public class Rover extends Model implements Buildable {
+public class RoverModel extends Model {
 
-    double wheelRotation;
+    double wheelRotationSpeed;
 
-    public Rover() {
-        super(10);
-        this.wheelRotation = -10;
+    public RoverModel() {
+        super(10, true);
+        this.wheelRotationSpeed = -10;
     }
 
     @Override
     public Xform build() {
-
         Xform roverGroup =  new Xform();
 
         Xform roverBodyXform =  new Xform();
@@ -157,8 +157,9 @@ public class Rover extends Model implements Buildable {
 
         this.xform = roverGroup;
 
-        return roverGroup;
+        this.built = true;
 
+        return roverGroup;
     }
 
 }

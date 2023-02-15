@@ -1,19 +1,30 @@
-package marsrover;
+package marsrover.model;
 
+import marsrover.Main;
+import marsrover.TerminalThread;
+import marsrover.entity.Entity;
+import marsrover.model.models.Model;
+import marsrover.terrain.GridSquare;
+import marsrover.terrain.Plateau;
+
+import java.util.Arrays;
 import java.util.List;
 
 public class Movement extends Thread {
 
     MovementType type;
-    Model subject;
+    Entity entity;
     Xform xform;
     double distance;
     long speed;
 
-    public Movement(Model subject, MovementType type, double distance, long speed) {
+    int xOffset;
+    int zOffset;
+
+    public Movement(Entity entity, MovementType type, double distance, long speed) {
         this.type = type;
-        this.subject = subject;
-        this.xform = subject.xform;
+        this.entity = entity;
+        this.xform = entity.model.getXform();
         this.distance = distance;
         this.speed = speed;
     }
@@ -21,12 +32,16 @@ public class Movement extends Thread {
     @Override
     public void run() {
 
+        TerminalThread.movementFlag = true;
+
+//        System.out.println("heading = " + entity.getHeading());
+//        System.out.println("movement xform address = " + this.xform);
         int xOffset = 0;
         int zOffset = 0;
         switch (this.type) {
             case FORWARD -> {
                 for (int i = 0 ; i < distance ; i++) {
-                    switch (subject.getHeading()) {
+                    switch (entity.getHeading()) {
                         case 0 -> xform.setTranslateX(xform.getTranslateX() + 1);
                         case 1 -> xform.setTranslateZ(xform.getTranslateZ() + 1);
                         case 2 -> xform.setTranslateX(xform.getTranslateX() - 1);
@@ -40,12 +55,12 @@ public class Movement extends Thread {
                         e.printStackTrace();
                     }
                 }
-                xOffset = switch (subject.getHeading()) {
+                xOffset = switch (entity.getHeading()) {
                     case 0 -> 1;
                     case 2 -> -1;
                     default -> 0;
                 };
-                zOffset = switch (subject.getHeading()) {
+                zOffset = switch (entity.getHeading()) {
                     case 1 -> 1;
                     case 3 -> -1;
                     default -> 0;
@@ -53,7 +68,7 @@ public class Movement extends Thread {
             }
             case BACKWARD -> {
                 for (int i = 0 ; i < distance ; i++) {
-                    switch (subject.getHeading()) {
+                    switch (entity.getHeading()) {
                         case 0 -> xform.setTranslateX(xform.getTranslateX() - 1);
                         case 1 -> xform.setTranslateZ(xform.getTranslateZ() - 1);
                         case 2 -> xform.setTranslateX(xform.getTranslateX() + 1);
@@ -67,18 +82,19 @@ public class Movement extends Thread {
                         e.printStackTrace();
                     }
                 }
-                xOffset = switch (subject.getHeading()) {
+                xOffset = switch (entity.getHeading()) {
                     case 0 -> -1;
                     case 2 -> 1;
                     default -> 0;
                 };
-                zOffset = switch (subject.getHeading()) {
+                zOffset = switch (entity.getHeading()) {
                     case 1 -> -1;
                     case 3 -> 1;
                     default -> 0;
                 };
             }
             case TURN_RIGHT -> {
+                distance = 90; //TODO: Shouldn't be overridden - temporarily magic to avoid inaccurate values passed to the method
                 for (int i = 0 ; i < distance ; i++) {
                     xform.setRotate(xform.getRotate() - 1);
                     for (int j = 1; j < 4; j++) {
@@ -89,9 +105,10 @@ public class Movement extends Thread {
                         e.printStackTrace();
                     }
                 }
-                subject.setHeading(subject.getHeading() >= 3 ? 0 : subject.getHeading() + 1);
+                entity.setHeading(entity.getHeading() >= 3 ? 0 : entity.getHeading() + 1);
             }
             case TURN_LEFT -> {
+                distance = 90; //TODO: Shouldn't be overridden - temporarily magic to avoid inaccurate values passed to the method
                 for (int i = 0 ; i < distance ; i++) {
                     xform.setRotate(xform.getRotate() + 1);
                     for (int j = 1; j < 4; j++) {
@@ -102,28 +119,29 @@ public class Movement extends Thread {
                         e.printStackTrace();
                     }
                 }
-                subject.setHeading(subject.getHeading() <= 0 ? 3 : subject.getHeading() - 1);
+                entity.setHeading(entity.getHeading() <= 0 ? 3 : entity.getHeading() - 1);
             }
         }
-        updateTerrainLocation(subject, xOffset, zOffset);
+        this.xOffset = xOffset;
+        this.zOffset = zOffset;
+
+        entity.updateTerrainLocation(this.xOffset, this.zOffset);
+        entity.updateCoordinates(this.xOffset, this.zOffset);
+
+//        System.out.println("coords post-movement = " + Arrays.toString(entity.getCoordinates()));
+        TerminalThread.movementFlag = false;
+
     }
 
-    void updateTerrainLocation(Model model, int x, int z) {
-        // TODO: This shouldn't need to be iterative - can be made much more efficient by saving the Model's coordinates in its class
-        if (model.getSurface() instanceof Plateau plateau) {
-            for (List<Grid> row : plateau.grids) {
-                for (Grid grid : row) {
-                    if (grid.getOccupant() == model) {
-                        grid.setOccupant(null);
-                        plateau.grids.get(grid.coordinates[0] + x).get(grid.coordinates[1 + z]).setOccupant(model);
-                        return;
-                    }
-                }
-            }
-        }
+    public int getxOffset() {
+        return this.xOffset;
     }
 
-    enum MovementType {
+    public int getzOffset() {
+        return this.zOffset;
+    }
+
+    public enum MovementType {
         FORWARD,
         BACKWARD,
         TURN_RIGHT,
