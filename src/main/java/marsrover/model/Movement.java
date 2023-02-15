@@ -34,8 +34,8 @@ public class Movement extends Thread {
 
         TerminalThread.movementFlag = true;
 
-        System.out.println("heading = " + entity.getHeading());
-        System.out.println("movement xform address = " + this.xform);
+//        System.out.println("heading = " + entity.getHeading());
+//        System.out.println("movement xform address = " + this.xform);
         int xOffset = 0;
         int zOffset = 0;
         switch (this.type) {
@@ -94,6 +94,7 @@ public class Movement extends Thread {
                 };
             }
             case TURN_RIGHT -> {
+                distance = 90; //TODO: Shouldn't be overridden - temporarily magic to avoid inaccurate values passed to the method
                 for (int i = 0 ; i < distance ; i++) {
                     xform.setRotate(xform.getRotate() - 1);
                     for (int j = 1; j < 4; j++) {
@@ -107,6 +108,7 @@ public class Movement extends Thread {
                 entity.setHeading(entity.getHeading() >= 3 ? 0 : entity.getHeading() + 1);
             }
             case TURN_LEFT -> {
+                distance = 90; //TODO: Shouldn't be overridden - temporarily magic to avoid inaccurate values passed to the method
                 for (int i = 0 ; i < distance ; i++) {
                     xform.setRotate(xform.getRotate() + 1);
                     for (int j = 1; j < 4; j++) {
@@ -126,7 +128,7 @@ public class Movement extends Thread {
         entity.updateTerrainLocation(this.xOffset, this.zOffset);
         entity.updateCoordinates(this.xOffset, this.zOffset);
 
-        System.out.println("coords post-movement = " + Arrays.toString(entity.getCoordinates()));
+//        System.out.println("coords post-movement = " + Arrays.toString(entity.getCoordinates()));
         TerminalThread.movementFlag = false;
 
     }

@@ -88,7 +88,6 @@ public class Main extends Application {
                             System.out.println("\nERROR: Invalid format, please try again.\n");
                         }
                     }
-//                    try {reader.close();} catch (IOException e) {e.printStackTrace();}
                     frame.dispose();
                     int[] finalCoords = coords;
                     int[] finalRoverCoords = roverCoords;
@@ -121,7 +120,7 @@ public class Main extends Application {
     @Override
     public void start(javafx.stage.Stage primaryStage) throws InterruptedException {
 
-        System.out.println("start()");
+//        System.out.println("start()");
 
         stage = new Stage();
         World world = new World();
@@ -136,13 +135,6 @@ public class Main extends Application {
 
         stage.showPrimaryStage(primaryStage);
 
-        // TODO: Menu should be repositioned and all the above should be placed in an execute method
-        // TODO: This method will either be called by a terminal listener or Generate Plateau
-
-//        Thread menuThread = new Thread(this::menu);
-//        menuThread.start();
-//        menuThread.join();
-
         menu();
 
 
@@ -152,10 +144,14 @@ public class Main extends Application {
             e.printStackTrace();
         }
 
+        runTerminalThread(world);
+
+    }
+
+    public static void runTerminalThread(World world) {
         TerminalThread terminalInput = new TerminalThread(world);
         Thread terminalThread = new Thread(terminalInput);
         terminalThread.start();
-
     }
 
     public static void main(String[] args) {

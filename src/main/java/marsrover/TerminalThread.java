@@ -1,5 +1,6 @@
 package marsrover;
 
+import marsrover.entity.Entity;
 import marsrover.model.Movement;
 
 import java.io.*;
@@ -27,16 +28,17 @@ public class TerminalThread implements Runnable {
                     case 'R' -> Movement.MovementType.TURN_RIGHT;
                     default -> throw new IllegalStateException("Unexpected value: " + instruction);
                 };
-
-                while (movementFlag) {
-                    Thread.onSpinWait();
-                }
-                Thread.sleep(1000);
+                while (movementFlag) {Thread.onSpinWait();}
                 world.getActiveMovable().move(direction, world.getMovementQuantum());
+                Thread.sleep(1000);
             }
+            int[] endCoords = ((Entity) world.getActiveMovable()).getCoordinates();
+//            System.out.println(((Entity) world.getActiveMovable()).model.getXform().getRotate());
+            System.out.println(endCoords[0] + " " + endCoords[1]);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
+        Main.runTerminalThread(world);
     }
 
 }

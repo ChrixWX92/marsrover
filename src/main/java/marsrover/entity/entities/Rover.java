@@ -60,7 +60,7 @@ public class Rover extends Entity implements Movable {
             }
 
 
-            System.out.println("coords pre-movement = " + Arrays.toString(this.getCoordinates()));
+//            System.out.println("coords pre-movement = " + Arrays.toString(this.getCoordinates()));
 
             ExecutorService executor = Executors.newFixedThreadPool(2);
 
@@ -72,7 +72,7 @@ public class Rover extends Entity implements Movable {
 
             movement.start();
 
-            System.out.println("offsets = " + movement.getxOffset() + ", " + movement.getzOffset());
+//            System.out.println("offsets = " + movement.getxOffset() + ", " + movement.getzOffset());
 
         }
     }
