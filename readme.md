@@ -30,12 +30,12 @@ Rover coordinates: "<int> <int> <N/E/S/W>" (representing the rover's starting x 
   (Multipliers: Hold SHIFT to increase movement speed, CTRL to decrease)
 
 ### Rover Control
-####Keyboard
+#### Keyboard
 * M: Move forward one grid space
 * B: Move backward one grid space
 * R: Turn right 90°
 * L: Turn left 90°
-####Terminal
+#### Terminal
 The above characters can be used to send their respective instructions to the rover.
 The rover will execute a string of consecutive characters' instructions in turn.
 
