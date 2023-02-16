@@ -1,19 +1,13 @@
 # Mars Rover
-
+## Description
 Interpretation of the Mars Rover Challenge using Swing and JavaFX3D.
 
-## Description
-
-An in-depth paragraph about your project and overview of use.
-
 ## Getting Started
-
 ### Executing program
 
 * Run the project's Main Class via your IDE (no binaries yet)
 
 ### Starting Up
-
 #### - Via Swing Interface
 * Enter your preferred plateau size (in coordinates)
 * Enter the desired coordinates for your rover

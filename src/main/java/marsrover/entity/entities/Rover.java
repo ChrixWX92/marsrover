@@ -12,10 +12,24 @@ import java.util.concurrent.Executors;
 
 public class Rover extends Entity implements Movable {
 
-    public Rover(int[] coordinates) {
+    public Rover(int[] coordinates, int facing) {
         super(coordinates, new RoverModel());
         if (coordinates[0] > 0) this.model.getXform().setTranslateX(this.getCoordinates()[0]*100);
         if (coordinates[1] > 0) this.model.getXform().setTranslateZ(this.getCoordinates()[1]*100);
+        switch ((char) facing) {
+            case 'E' -> {
+                this.model.getXform().setRotate(90);
+                this.setHeading(1);
+            }
+            case 'S' -> {
+                this.model.getXform().setRotate(180);
+                this.setHeading(2);
+            }
+            case 'W' -> {
+                this.model.getXform().setRotate(270);
+                this.setHeading(3);
+            }
+        }
         updateTerrainLocation(coordinates[0], coordinates[1]);
     }
 
