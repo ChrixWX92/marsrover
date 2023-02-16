@@ -91,7 +91,7 @@ public class Main extends Application {
                     frame.dispose();
                     int[] finalCoords = coords;
                     int[] finalRoverCoords = roverCoords;
-                    Main.taskQueue.add(() -> Main.stage.engageControl(finalCoords[0], finalCoords[1], finalRoverCoords[0], finalRoverCoords[1], finalRoverCoords[2]));
+                    Main.taskQueue.add(() -> Main.stage.engageControl(finalCoords[0]+1, finalCoords[1]+1, finalRoverCoords[0], finalRoverCoords[1], finalRoverCoords[2]));
                 }
                 else {
                     Platform.exit();
