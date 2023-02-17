@@ -41,6 +41,7 @@ public class Stage {
     }
 
     private void handleMouse() {
+
         scene.setOnMousePressed(me -> {
             mousePosX = me.getSceneX();
             mousePosY = me.getSceneY();
@@ -80,6 +81,9 @@ public class Stage {
     }
 
     private void handleKeyboard() {
+
+        if (TerminalThread.movementFlag) {return;} //TODO: Doesn't work?
+
         Movable subject = world.getActiveMovable();
         scene.setOnKeyPressed(new EventHandler<>() {
             @Override
