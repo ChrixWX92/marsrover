@@ -4,6 +4,7 @@ import javafx.animation.AnimationTimer;
 import marsrover.TerminalThread;
 import marsrover.entity.Entity;
 import marsrover.entity.Heading;
+import marsrover.entity.entities.Rover;
 
 import java.util.Arrays;
 
@@ -45,6 +46,7 @@ public class Movement extends Thread {
                     case FORWARD, BACKWARD -> linearMove(type == FORWARD ? speed : speed - (speed * 2));
                     case TURN_RIGHT, TURN_LEFT -> xform.rotateProperty().set(type == TURN_RIGHT ? xform.getRotate() - speed : xform.getRotate() + speed);
                 }
+                movePeripherals(speed);
                 degree--;
                 if (degree <= 0) {
                     switch (type) {
@@ -89,6 +91,15 @@ public class Movement extends Thread {
             xform.translateXProperty().set(entity.getHeading() == Heading.NORTH ? xform.getTranslateX() + amount : xform.getTranslateX() - amount);
         } else {
             xform.translateZProperty().set(entity.getHeading() == Heading.EAST ? xform.getTranslateZ() + amount : xform.getTranslateZ() - amount);
+        }
+    }
+
+    private void movePeripherals(double speed) {
+        if (entity instanceof Rover) {
+//            double distance = (((Cylinder) xform.getChildren().get(4)).getRadius() * 2) * Math.PI;
+            for (int j = 1; j < 4; j++) {
+                xform.getChildren().get(j).setRotate(xform.getChildren().get(j).getRotate() - (speed*5));
+            }
         }
     }
 
