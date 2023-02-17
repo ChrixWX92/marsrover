@@ -43,6 +43,10 @@ public class Plateau extends Terrain {
         return gridSize;
     }
 
+    public GridSquare getGridSquare(int x, int z) {
+        return this.grid.get(x).get(z);
+    }
+
     public int[] getSize() {
         return size;
     }

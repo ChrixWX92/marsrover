@@ -1,12 +1,13 @@
 package marsrover.entity.entities;
 
+import marsrover.TerminalThread;
 import marsrover.entity.Entity;
+import marsrover.entity.Heading;
 import marsrover.entity.Movable;
 import marsrover.model.Movement;
 import marsrover.model.models.RoverModel;
 import marsrover.terrain.Plateau;
 
-import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -16,18 +17,9 @@ public class Rover extends Entity implements Movable {
         super(coordinates, new RoverModel());
         if (coordinates[0] > 0) this.model.getXform().setTranslateX(this.getCoordinates()[0]*100);
         if (coordinates[1] > 0) this.model.getXform().setTranslateZ(this.getCoordinates()[1]*100);
-        switch ((char) facing) {
-            case 'E' -> {
-                this.model.getXform().setRotate(90);
-                this.setHeading(1);
-            }
-            case 'S' -> {
-                this.model.getXform().setRotate(180);
-                this.setHeading(2);
-            }
-            case 'W' -> {
-                this.model.getXform().setRotate(270);
-                this.setHeading(3);
+        for (Heading heading : Heading.values()) {
+            if (heading.character == (char) facing) {
+                this.setHeading(heading, true);
             }
         }
         updateTerrainLocation(coordinates[0], coordinates[1]);
@@ -43,7 +35,7 @@ public class Rover extends Entity implements Movable {
 
             switch (direction) {
                 case FORWARD -> {
-                    switch (this.getHeading()) {
+                    switch (this.getHeading().id) {
                         case 0 -> destinationX++;
                         case 1 -> destinationZ++;
                         case 2 -> destinationX--;
@@ -51,7 +43,7 @@ public class Rover extends Entity implements Movable {
                     }
                 }
                 case BACKWARD -> {
-                    switch (this.getHeading()) {
+                    switch (this.getHeading().id) {
                         case 0 -> destinationX--;
                         case 1 -> destinationZ--;
                         case 2 -> destinationX++;
@@ -74,19 +66,15 @@ public class Rover extends Entity implements Movable {
             }
 
 
-//            System.out.println("coords pre-movement = " + Arrays.toString(this.getCoordinates()));
-
             ExecutorService executor = Executors.newFixedThreadPool(2);
 
-            Movement movement = new Movement(this, direction, distance, 5);
+            Movement movement = new Movement(this, direction, distance, 2.3);
 //
 //        threadPool.submit(movement);
 //
 //        threadPool.execute(movement);
 
             movement.start();
-
-//            System.out.println("offsets = " + movement.getxOffset() + ", " + movement.getzOffset());
 
         }
     }
