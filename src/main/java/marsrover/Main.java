@@ -137,7 +137,6 @@ public class Main extends Application {
 
         menu();
 
-
         try {
             taskQueue.take().run();
         } catch (InterruptedException e) {

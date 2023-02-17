@@ -7,13 +7,7 @@ import marsrover.terrain.Terrain;
 
 public abstract class Entity {
 
-    /**
-     * 0 = N
-     * 1 = E
-     * 2 = S
-     * 3 = W
-     */
-    private int heading = 0;
+    private Heading heading = Heading.NORTH;
     public final Model model;
     Terrain surface;
     int[] coordinates;
@@ -25,8 +19,8 @@ public abstract class Entity {
 
     public void updateTerrainLocation(int x, int z) {
         if (this.surface instanceof Plateau plateau) {
-            GridSquare oldSquare = plateau.grid.get(this.coordinates[0]).get(this.coordinates[1]);
-            GridSquare newSquare = plateau.grid.get(this.coordinates[0] + x).get(this.coordinates[1] + z);
+            GridSquare oldSquare = plateau.getGridSquare(this.coordinates[0], this.coordinates[1]);
+            GridSquare newSquare = plateau.getGridSquare(this.coordinates[0] + x, this.coordinates[1] + z);
             oldSquare.setOccupant(null);
             newSquare.setOccupant(this);
         }
@@ -44,12 +38,17 @@ public abstract class Entity {
         }
     }
 
-    public int getHeading() {
+    public Heading getHeading() {
         return heading;
     }
 
-    public void setHeading(int heading) {
+    public void setHeading(Heading heading) {
+        this.setHeading(heading, false);
+    }
+
+    public void setHeading(Heading heading, boolean moveModel) {
         this.heading = heading;
+        if (moveModel && this.model != null) this.model.getXform().setRotate(heading.degreesFromNorth);
     }
 
     public int[] getCoordinates() {

@@ -1,14 +1,13 @@
 package marsrover.model;
 
-import marsrover.Main;
+import javafx.animation.AnimationTimer;
 import marsrover.TerminalThread;
 import marsrover.entity.Entity;
-import marsrover.model.models.Model;
-import marsrover.terrain.GridSquare;
-import marsrover.terrain.Plateau;
+import marsrover.entity.Heading;
 
 import java.util.Arrays;
-import java.util.List;
+
+import static marsrover.model.Movement.MovementType.*;
 
 public class Movement extends Thread {
 
@@ -16,12 +15,13 @@ public class Movement extends Thread {
     Entity entity;
     Xform xform;
     double distance;
-    long speed;
+    double speed;
+    double degree;
 
     int xOffset;
     int zOffset;
 
-    public Movement(Entity entity, MovementType type, double distance, long speed) {
+    public Movement(Entity entity, MovementType type, double distance, double speed) {
         this.type = type;
         this.entity = entity;
         this.xform = entity.model.getXform();
@@ -34,103 +34,62 @@ public class Movement extends Thread {
 
         TerminalThread.movementFlag = true;
 
-//        System.out.println("heading = " + entity.getHeading());
-//        System.out.println("movement xform address = " + this.xform);
-        int xOffset = 0;
-        int zOffset = 0;
-        switch (this.type) {
-            case FORWARD -> {
-                for (int i = 0 ; i < distance ; i++) {
-                    switch (entity.getHeading()) {
-                        case 0 -> xform.setTranslateX(xform.getTranslateX() + 1);
-                        case 1 -> xform.setTranslateZ(xform.getTranslateZ() + 1);
-                        case 2 -> xform.setTranslateX(xform.getTranslateX() - 1);
-                        case 3 -> xform.setTranslateZ(xform.getTranslateZ() - 1);
-                    }
-                    for (int j = 1; j < 4; j++) {
-                        xform.getChildren().get(j).setRotate(xform.getChildren().get(j).getRotate() - 5);}
-                    try {
-                        sleep(speed);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+        degree = distance / speed;
+        double origin = xform.getRotate();
+        System.out.println(entity.getHeading());
+
+        AnimationTimer timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                switch (type) {
+                    case FORWARD, BACKWARD -> linearMove(type == FORWARD ? speed : speed - (speed * 2));
+                    case TURN_RIGHT, TURN_LEFT -> xform.rotateProperty().set(type == TURN_RIGHT ? xform.getRotate() - speed : xform.getRotate() + speed);
                 }
-                xOffset = switch (entity.getHeading()) {
-                    case 0 -> 1;
-                    case 2 -> -1;
-                    default -> 0;
-                };
-                zOffset = switch (entity.getHeading()) {
-                    case 1 -> 1;
-                    case 3 -> -1;
-                    default -> 0;
-                };
-            }
-            case BACKWARD -> {
-                for (int i = 0 ; i < distance ; i++) {
-                    switch (entity.getHeading()) {
-                        case 0 -> xform.setTranslateX(xform.getTranslateX() - 1);
-                        case 1 -> xform.setTranslateZ(xform.getTranslateZ() - 1);
-                        case 2 -> xform.setTranslateX(xform.getTranslateX() + 1);
-                        case 3 -> xform.setTranslateZ(xform.getTranslateZ() + 1);
+                degree--;
+                if (degree <= 0) {
+                    switch (type) {
+                        case TURN_RIGHT -> {
+                            xform.setRotate(origin - distance);
+                            entity.setHeading(entity.getHeading().getHeadingRight());
+                        }
+                        case TURN_LEFT -> {
+                            xform.setRotate(origin + distance);
+                            entity.setHeading(entity.getHeading().getHeadingLeft());
+                        }
                     }
-                    for (int j = 1; j < 4; j++) {
-                        xform.getChildren().get(j).setRotate(xform.getChildren().get(j).getRotate() + 5);}
-                    try {
-                        sleep(speed);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    this.stop();
                 }
-                xOffset = switch (entity.getHeading()) {
-                    case 0 -> -1;
-                    case 2 -> 1;
-                    default -> 0;
-                };
-                zOffset = switch (entity.getHeading()) {
-                    case 1 -> -1;
-                    case 3 -> 1;
-                    default -> 0;
-                };
             }
-            case TURN_RIGHT -> {
-                distance = 90; //TODO: Shouldn't be overridden - temporarily magic to avoid inaccurate values passed to the method
-                for (int i = 0 ; i < distance ; i++) {
-                    xform.setRotate(xform.getRotate() - 1);
-                    for (int j = 1; j < 4; j++) {
-                        xform.getChildren().get(j).setRotate(xform.getChildren().get(j).getRotate() + 5);}
-                    try {
-                        sleep(speed);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                entity.setHeading(entity.getHeading() >= 3 ? 0 : entity.getHeading() + 1);
-            }
-            case TURN_LEFT -> {
-                distance = 90; //TODO: Shouldn't be overridden - temporarily magic to avoid inaccurate values passed to the method
-                for (int i = 0 ; i < distance ; i++) {
-                    xform.setRotate(xform.getRotate() + 1);
-                    for (int j = 1; j < 4; j++) {
-                        xform.getChildren().get(j).setRotate(xform.getChildren().get(j).getRotate() + 5);}
-                    try {
-                        sleep(speed);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                entity.setHeading(entity.getHeading() <= 0 ? 3 : entity.getHeading() - 1);
-            }
+        };
+        timer.start();
+
+        if (type == FORWARD || type == BACKWARD) {
+            this.xOffset = switch (entity.getHeading().id) {
+                case 0 -> 1;
+                case 2 -> -1;
+                default -> 0;
+            };
+            this.zOffset = switch (entity.getHeading().id) {
+                case 1 -> 1;
+                case 3 -> -1;
+                default -> 0;
+            };
+            entity.updateTerrainLocation(this.xOffset, this.zOffset);
+            entity.updateCoordinates(this.xOffset, this.zOffset);
         }
-        this.xOffset = xOffset;
-        this.zOffset = zOffset;
 
-        entity.updateTerrainLocation(this.xOffset, this.zOffset);
-        entity.updateCoordinates(this.xOffset, this.zOffset);
+        System.out.println(Arrays.toString(entity.getCoordinates()));
 
-//        System.out.println("coords post-movement = " + Arrays.toString(entity.getCoordinates()));
         TerminalThread.movementFlag = false;
 
+    }
+
+    private void linearMove(double amount) {
+        if (entity.getHeading().id % 2 == 0) {
+            xform.translateXProperty().set(entity.getHeading() == Heading.NORTH ? xform.getTranslateX() + amount : xform.getTranslateX() - amount);
+        } else {
+            xform.translateZProperty().set(entity.getHeading() == Heading.EAST ? xform.getTranslateZ() + amount : xform.getTranslateZ() - amount);
+        }
     }
 
     public int getxOffset() {
