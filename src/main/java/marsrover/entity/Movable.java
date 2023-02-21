@@ -1,14 +1,11 @@
 package marsrover.entity;
 
+import javafx.scene.input.KeyCode;
+import marsrover.model.Actionable;
 import marsrover.model.Movement;
-import marsrover.model.models.Model;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+public interface Movable extends Actionable {
 
-public interface Movable {
-
-    // Should be synchronized
-    void move(Movement.MovementType direction, double distance) throws InterruptedException;
+    void move(Movement.MovementType direction, double distance);
 
 }

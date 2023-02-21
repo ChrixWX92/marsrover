@@ -6,6 +6,8 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import marsrover.model.Xform;
 
+import java.awt.event.MouseEvent;
+
 public class GridModel extends Model {
 
     double size;
@@ -24,6 +26,7 @@ public class GridModel extends Model {
         surface.setMaterial(surfaceMaterial);
         Xform xform = new Xform();
         xform.getChildren().add(surface);
+
         this.xform = xform;
         return this.xform;
     }
