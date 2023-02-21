@@ -122,8 +122,8 @@ public class WelcomePane extends JFrame implements ActionListener {
 
         if (e.getSource() == button) {
 
-            int x = xBox.getText().length() > 0 ? Integer.parseInt(xBox.getText()) : 5; //TODO: ERROR IF NO VALUE
-            int z = zBox.getText().length() > 0 ? Integer.parseInt(zBox.getText()) : 5; //TODO: ERROR IF NO VALUE
+            int x = xBox.getText().length() > 0 ? Integer.parseInt(xBox.getText()) : 5;
+            int z = zBox.getText().length() > 0 ? Integer.parseInt(zBox.getText()) : 5;
             int roverX = roverXBox.getText().length() > 0 ? Integer.parseInt(roverXBox.getText()) : 0;
             int roverZ = roverZBox.getText().length() > 0 ? Integer.parseInt(roverZBox.getText()) : 0;
 

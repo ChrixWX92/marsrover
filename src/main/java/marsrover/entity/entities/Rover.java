@@ -62,7 +62,6 @@ public class Rover extends Entity implements Movable {
                 return;
             }
 
-
             Movement movement = new Movement(this, direction, distance, 2.3);
 
             Controller.actionQueue.offer(movement);
