@@ -1,6 +1,8 @@
 package marsrover.model;
 
 import javafx.animation.*;
+import javafx.scene.Node;
+import javafx.scene.shape.Cylinder;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 import marsrover.entity.Entity;
@@ -19,6 +21,7 @@ public class Movement implements Runnable {
     Xform xform;
     double distance;
     double speed;
+    Duration duration;
     Transition transition;
     volatile boolean active;
 
@@ -31,6 +34,7 @@ public class Movement implements Runnable {
         this.xform = entity.model.getXform();
         this.distance = distance;
         this.speed = speed;
+        this.duration = Duration.seconds((16 - speed) * 0.25);
     }
 
     @Override
@@ -42,8 +46,8 @@ public class Movement implements Runnable {
 
         // Creating the transition
         switch (type) {
-            case FORWARD, BACKWARD -> this.transition = linearMove(calculateSpeed(5));
-            case TURN_RIGHT, TURN_LEFT -> this.transition = axialMove(calculateSpeed(5));
+            case FORWARD, BACKWARD -> this.transition = linearMove();
+            case TURN_RIGHT, TURN_LEFT -> this.transition = axialMove();
         }
         movePeripherals();
 
@@ -51,19 +55,12 @@ public class Movement implements Runnable {
         this.transition.setOnFinished((e) -> active = false);
         this.transition.play();
 
-        if (type == FORWARD || type == BACKWARD) {
-
-        }
-        else if (type == TURN_LEFT || type == TURN_RIGHT) {
-
-        }
-
         // Will not allow the Runnable to end until the transition has completed
         while (active) Thread.onSpinWait();
 
     }
 
-    private TranslateTransition linearMove(Duration speed) {
+    private TranslateTransition linearMove() {
 
         double amount = type == FORWARD ? distance : distance - (distance * 2);
 
@@ -72,7 +69,7 @@ public class Movement implements Runnable {
 
         TranslateTransition transition = new TranslateTransition();
         transition.setNode(xform);
-        transition.setDuration(speed);
+        transition.setDuration(duration);
 
         if (entity.getHeading().id % 2 == 0) {
             transition.setByX(entity.getHeading() == NORTH ? amount : -amount);
@@ -101,13 +98,13 @@ public class Movement implements Runnable {
 
     }
 
-    private RotateTransition axialMove(Duration speed) {
+    private RotateTransition axialMove() {
 
         RotateTransition transition = new RotateTransition();
 
         transition.setNode(xform);
         transition.setAxis(Rotate.Y_AXIS);
-        transition.setDuration(speed);
+        transition.setDuration(duration);
 
         double amount = type == TURN_RIGHT ? -90 : 90;
 
@@ -126,18 +123,36 @@ public class Movement implements Runnable {
 
     private void movePeripherals() {
         if (entity instanceof Rover) {
-            for (int j = 1; j < 4; j++) {
-                RotateTransition transition = new RotateTransition();
-                transition.setNode(xform.getChildren().get(j));
-                transition.setByAngle(-(distance * Math.PI));
-                transition.setDuration(this.transition.getTotalDuration());
-                transition.play();
+            for (int i = 1; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    Node wheelComponent = ((Xform) xform.getChildren().get(i)).getChildren().get(j);
+                    RotateTransition transition = new RotateTransition();
+                    transition.setNode(wheelComponent);
+                    switch (type) {
+                        case FORWARD -> transition.setByAngle(-distance * Math.PI);
+                        case BACKWARD -> transition.setByAngle(distance * Math.PI);
+                        case TURN_LEFT -> {
+                            if (j < 2) {
+                                transition.setByAngle(distance * Math.PI);
+                            }
+                            else {
+                                transition.setByAngle(-distance * Math.PI);
+                            }
+                        }
+                        case TURN_RIGHT -> {
+                            if (j < 2) {
+                                transition.setByAngle(-distance * Math.PI);
+                            }
+                            else {
+                                transition.setByAngle(distance * Math.PI);
+                            }
+                        }
+                    }
+                    transition.setDuration(this.transition.getTotalDuration());
+                    transition.play();
+                }
             }
         }
-    }
-
-    private Duration calculateSpeed(int speedFactor) {
-        return Duration.seconds(speedFactor * 0.25);
     }
 
     public int getxOffset() {
