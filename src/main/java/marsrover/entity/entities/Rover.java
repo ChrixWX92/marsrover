@@ -1,5 +1,6 @@
 package marsrover.entity.entities;
 
+import marsrover.controllers.Controller;
 import marsrover.entity.Entity;
 import marsrover.entity.Heading;
 import marsrover.entity.Movable;
@@ -64,7 +65,7 @@ public class Rover extends Entity implements Movable {
 
             Movement movement = new Movement(this, direction, distance, 2.3);
 
-            actionDeque.offer(movement);
+            Controller.actionQueue.offer(movement);
 
         }
     }

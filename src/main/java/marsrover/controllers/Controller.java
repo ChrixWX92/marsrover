@@ -5,24 +5,25 @@ import marsrover.Camera;
 import marsrover.Stage;
 import marsrover.World;
 import marsrover.entity.Movable;
-import marsrover.model.Actionable;
 import marsrover.model.Movement;
 
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 public class Controller {
 
+    public static LinkedBlockingQueue<Runnable> actionQueue = new LinkedBlockingQueue<>(1);
+
     ExecutorService actionExecutor = Executors.newSingleThreadExecutor();
-    Future<?> futureAction;
+    Future<?> futureAction = null;
 
-    private Stage stage;
-    private Scene scene;
-    private World world;
+    CompletableFuture<Void> actionFuture;
 
-    private Camera camera;
+    private final Stage stage;
+    private final Scene scene;
+    private final World world;
+
+    private final Camera camera;
 
     private static final double CONTROL_MULTIPLIER = 0.1;
     private static final double SHIFT_MULTIPLIER = 10.0;
@@ -39,9 +40,10 @@ public class Controller {
 
     public Controller(Stage stage) {
         this.stage = stage;
-        this.scene = stage.getScene();
-        this.world = stage.getWorld();
-        this.camera = stage.getCamera();
+        this.scene = this.stage.getScene();
+        this.world = this.stage.getWorld();
+        this.camera = this.stage.getCamera();
+        this.actionFuture = createActionFuture();
     }
 
     private void handleMouse() {
@@ -100,11 +102,6 @@ public class Controller {
 
             subject.move(movementType, world.getMovementQuantum());
 
-            System.out.println(Actionable.actionDeque.size());
-
-            // TODO: actionDeque is only polled on key press, rather than whenever it isn't empty
-            if (futureAction == null || futureAction.isDone()) futureAction = actionExecutor.submit(Objects.requireNonNull(Actionable.actionDeque.poll()));
-
         });
 
     }
@@ -112,6 +109,17 @@ public class Controller {
     public void engagePeripheralHandlers() {
         this.handleKeyboard();
         this.handleMouse();
+    }
+
+    private CompletableFuture<Void> createActionFuture(){
+        Runnable runnable = () -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                if (!actionQueue.isEmpty() && (futureAction == null || futureAction.isDone())) {
+                    futureAction = actionExecutor.submit(Objects.requireNonNull(actionQueue.poll()));
+                }
+            }
+        };
+        return CompletableFuture.runAsync(runnable);
     }
 
 }
