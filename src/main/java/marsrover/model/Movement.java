@@ -40,8 +40,6 @@ public class Movement implements Runnable {
     @Override
     public void run() {
 
-        System.out.println((entity.getHeading()));
-
         this.active = true;
 
         // Creating the transition
@@ -63,9 +61,6 @@ public class Movement implements Runnable {
     private TranslateTransition linearMove() {
 
         double amount = type == FORWARD ? distance : distance - (distance * 2);
-
-        System.out.println(type.toString());
-        System.out.println(Arrays.toString(entity.getCoordinates()));
 
         TranslateTransition transition = new TranslateTransition();
         transition.setNode(xform);

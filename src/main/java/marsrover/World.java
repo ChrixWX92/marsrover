@@ -29,22 +29,17 @@ public class World {
     }
 
     public void setTerrain(Terrain terrain) {
-//        System.out.println("Setting terrain");
         this.terrain = terrain;
         this.xform.getChildren().add(terrain.build());
-//        System.out.println("terrain build = " +terrain.build());
         if (this.terrain instanceof Plateau plateau) this.movementQuantum = plateau.getGridSize();
         else {this.movementQuantum = 1;}
-//        System.out.println("mq = " + movementQuantum);
     }
 
     public void addEntity(Entity entity) {
-//        System.out.println("Adding " + entity.getClass().getSimpleName());
         entity.setSurface(terrain);
         entities.add(entity);
         buildables.add(entity.model);
         xform.getChildren().addAll(entity.model.getXform());
-//        buildBuildables();
     }
 
     public void updateBuildables(boolean build) {

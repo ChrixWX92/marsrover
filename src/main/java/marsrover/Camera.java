@@ -22,8 +22,6 @@ public class Camera implements Buildable {
 
     @Override
     public Xform build() {
-//        System.out.println("buildCamera()");
-//        root.getChildren().add(xforms[0]);
         xforms[0].getChildren().add(xforms[1]);
         xforms[1].getChildren().add(xforms[2]);
         xforms[2].getChildren().add(camera);
