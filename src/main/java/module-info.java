@@ -16,5 +16,6 @@ module marsrover {
     opens marsrover.menu.menus;
     opens marsrover.entity;
     opens marsrover.model.models;
+    opens marsrover.controllers;
 
 }

@@ -1,147 +1,24 @@
 package marsrover;
 
-import javafx.event.EventHandler;
 import javafx.scene.*;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
-import marsrover.entity.Entity;
-import marsrover.entity.Movable;
+import marsrover.controllers.Controller;
 import marsrover.entity.entities.Rover;
-import marsrover.model.Movement;
-import marsrover.model.Xform;
 import marsrover.terrain.Plateau;
 
 public class Stage {
 
-    private static final double CONTROL_MULTIPLIER = 0.1;
-    private static final double SHIFT_MULTIPLIER = 10.0;
-    private static final double MOUSE_SPEED = 0.1;
-    private static final double ROTATION_SPEED = 2.0;
-    private static final double TRACK_SPEED = 3.3;
-
-    double mousePosX;
-    double mousePosY;
-    double mouseOldX;
-    double mouseOldY;
-    double mouseDeltaX;
-    double mouseDeltaY;
-
     private Scene scene;
 
     private final Group group;
-
-    Camera camera;
-    World world;
+    private Camera camera;
+    private World world;
 
     public Stage() {
         this.group = new Group();
         group.setDepthTest(DepthTest.ENABLE);
-    }
-
-    private void handleMouse() {
-
-        scene.setOnMousePressed(me -> {
-            mousePosX = me.getSceneX();
-            mousePosY = me.getSceneY();
-            mouseOldX = me.getSceneX();
-            mouseOldY = me.getSceneY();
-        });
-        scene.setOnMouseDragged(me -> {
-            mouseOldX = mousePosX;
-            mouseOldY = mousePosY;
-            mousePosX = me.getSceneX();
-            mousePosY = me.getSceneY();
-            mouseDeltaX = (mousePosX - mouseOldX);
-            mouseDeltaY = (mousePosY - mouseOldY);
-
-            double modifier = 1.0;
-
-            if (me.isControlDown()) {
-                modifier = CONTROL_MULTIPLIER;
-            }
-            if (me.isShiftDown()) {
-                modifier = SHIFT_MULTIPLIER;
-            }
-            if (me.isPrimaryButtonDown()) {
-                camera.xforms[0].ry.setAngle(camera.xforms[0].ry.getAngle() - mouseDeltaX*MOUSE_SPEED*modifier*ROTATION_SPEED);
-                camera.xforms[0].rx.setAngle(camera.xforms[0].rx.getAngle() + mouseDeltaY*MOUSE_SPEED*modifier*ROTATION_SPEED);
-            }
-            else if (me.isSecondaryButtonDown()) {
-                double z = camera.getPerspectiveCamera().getTranslateZ();
-                double newZ = z + mouseDeltaX*MOUSE_SPEED*modifier*7;
-                camera.getPerspectiveCamera().setTranslateZ(newZ);
-            }
-            else if (me.isMiddleButtonDown()) {
-                camera.xforms[1].t.setX(camera.xforms[1].t.getX() + mouseDeltaX*MOUSE_SPEED*modifier*TRACK_SPEED);
-                camera.xforms[1].t.setY(camera.xforms[1].t.getY() + mouseDeltaY*MOUSE_SPEED*modifier*TRACK_SPEED);
-            }
-        });
-    }
-
-    private void handleKeyboard() {
-
-        if (TerminalThread.movementFlag) {return;} //TODO: Doesn't work?
-
-        Movable subject = world.getActiveMovable();
-        scene.setOnKeyPressed(new EventHandler<>() {
-            @Override
-            public void handle(KeyEvent event) {
-                switch (event.getCode()) {
-                    case L:
-                        // TURN LEFT
-                        try {
-                            subject.move(Movement.MovementType.TURN_LEFT, 90);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    case R:
-                        // TURN RIGHT
-                        try {
-                            subject.move(Movement.MovementType.TURN_RIGHT, 90);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    case M:
-                        // FORWARD
-                        synchronized (this) {
-                            try {
-                                subject.move(Movement.MovementType.FORWARD, world.getMovementQuantum());
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        break;
-                    case B:
-                        // BACKWARD
-                        synchronized (this) {
-                            try {
-                                subject.move(Movement.MovementType.BACKWARD, world.getMovementQuantum());
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        break;
-                    case W:
-
-
-                    case A:
-
-                    case D:
-
-                    case Z:
-                        camera.reset();
-//                        camera.snapToEntity((Entity) world.getActiveMovable());
-                        break;
-                    case X:
-//                        axisGroup.setVisible(!axisGroup.isVisible()); TODO: Enable axes
-                        break;
-                }
-            }
-        });
     }
 
     public void addWorld(World world) {
@@ -170,11 +47,6 @@ public class Stage {
         ));
     }
 
-    public void engagePeripheralHandlers() {
-        this.handleKeyboard();
-        this.handleMouse();
-    }
-
     public void showPrimaryStage(javafx.stage.Stage primaryStage) {
         primaryStage.setTitle("Mars Rover");
         primaryStage.setScene(scene);
@@ -189,11 +61,25 @@ public class Stage {
         Rover initialRover = new Rover(new int[]{roverX,roverZ}, facing);
         world.addEntity(initialRover);
         world.setActiveMovable(initialRover);
-        engagePeripheralHandlers();
+        Controller controller =  new Controller(this);
+        controller.engagePeripheralHandlers();
     }
+
+    public Scene getScene() {
+        return scene;
+    }
+
+    public Camera getCamera() {
+        return camera;
+    }
+
 
     public Group getGroup() {
         return group;
+    }
+
+    public World getWorld() {
+        return world;
     }
 
 }

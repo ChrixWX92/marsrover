@@ -1,15 +1,12 @@
 package marsrover.entity.entities;
 
-import marsrover.TerminalThread;
+import marsrover.controllers.Controller;
 import marsrover.entity.Entity;
 import marsrover.entity.Heading;
 import marsrover.entity.Movable;
 import marsrover.model.Movement;
 import marsrover.model.models.RoverModel;
 import marsrover.terrain.Plateau;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class Rover extends Entity implements Movable {
 
@@ -66,15 +63,9 @@ public class Rover extends Entity implements Movable {
             }
 
 
-            ExecutorService executor = Executors.newFixedThreadPool(2);
-
             Movement movement = new Movement(this, direction, distance, 2.3);
-//
-//        threadPool.submit(movement);
-//
-//        threadPool.execute(movement);
 
-            movement.start();
+            Controller.actionQueue.offer(movement);
 
         }
     }

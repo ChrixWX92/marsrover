@@ -1,23 +1,22 @@
 package marsrover.model;
 
-import javafx.animation.AnimationTimer;
-import marsrover.TerminalThread;
+import javafx.animation.*;
+import javafx.scene.transform.Rotate;
 import marsrover.entity.Entity;
 import marsrover.entity.Heading;
 import marsrover.entity.entities.Rover;
 
-import java.util.Arrays;
-
 import static marsrover.model.Movement.MovementType.*;
 
-public class Movement extends Thread {
+public class Movement implements Runnable {
 
     MovementType type;
     Entity entity;
     Xform xform;
     double distance;
     double speed;
-    double degree;
+    Transition transition;
+    volatile boolean active;
 
     int xOffset;
     int zOffset;
@@ -33,39 +32,21 @@ public class Movement extends Thread {
     @Override
     public void run() {
 
-        TerminalThread.movementFlag = true;
+        this.active = true;
 
-        degree = distance / speed;
-        double origin = xform.getRotate();
-        System.out.println(entity.getHeading());
+        // Creating the transition
+        switch (type) {
+            case FORWARD, BACKWARD -> this.transition = linearMove();
+            case TURN_RIGHT, TURN_LEFT -> this.transition = axialMove();
+        }
+//                movePeripherals(speed); TODO: Move wheels too
 
-        AnimationTimer timer = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                switch (type) {
-                    case FORWARD, BACKWARD -> linearMove(type == FORWARD ? speed : speed - (speed * 2));
-                    case TURN_RIGHT, TURN_LEFT -> xform.rotateProperty().set(type == TURN_RIGHT ? xform.getRotate() - speed : xform.getRotate() + speed);
-                }
-                movePeripherals(speed);
-                degree--;
-                if (degree <= 0) {
-                    switch (type) {
-                        case TURN_RIGHT -> {
-                            xform.setRotate(origin - distance);
-                            entity.setHeading(entity.getHeading().getHeadingRight());
-                        }
-                        case TURN_LEFT -> {
-                            xform.setRotate(origin + distance);
-                            entity.setHeading(entity.getHeading().getHeadingLeft());
-                        }
-                    }
-                    this.stop();
-                }
-            }
-        };
-        timer.start();
+        // Running the transition  - this runnable will not finish executing until the transition has finished running
+        this.transition.setOnFinished((e) -> active = false);
+        this.transition.play();
 
         if (type == FORWARD || type == BACKWARD) {
+            // Defining offset to update location information
             this.xOffset = switch (entity.getHeading().id) {
                 case 0 -> 1;
                 case 2 -> -1;
@@ -76,22 +57,54 @@ public class Movement extends Thread {
                 case 3 -> -1;
                 default -> 0;
             };
+
+            // Updating location information
             entity.updateTerrainLocation(this.xOffset, this.zOffset);
             entity.updateCoordinates(this.xOffset, this.zOffset);
         }
+        else if (type == TURN_LEFT || type == TURN_RIGHT) {
+            // Changing Entity heading if it has turned
+            if (type == TURN_RIGHT) {
+                entity.setHeading(entity.getHeading().getHeadingRight());
+            } else {
+                entity.setHeading(entity.getHeading().getHeadingLeft());
+            }
+        }
 
-        System.out.println(Arrays.toString(entity.getCoordinates()));
-
-        TerminalThread.movementFlag = false;
+        // Will not allow the Runnable to end until the transition has completed
+        while (active) Thread.onSpinWait();
 
     }
 
-    private void linearMove(double amount) {
+    private TranslateTransition linearMove() {
+
+        double amount = type == FORWARD ? distance : distance - (distance * 2);
+
+        TranslateTransition transition = new TranslateTransition();
+        transition.setNode(xform);
+
         if (entity.getHeading().id % 2 == 0) {
-            xform.translateXProperty().set(entity.getHeading() == Heading.NORTH ? xform.getTranslateX() + amount : xform.getTranslateX() - amount);
+            transition.setByX(entity.getHeading() == Heading.NORTH ? amount : -amount);
         } else {
-            xform.translateZProperty().set(entity.getHeading() == Heading.EAST ? xform.getTranslateZ() + amount : xform.getTranslateZ() - amount);
+            transition.setByZ(entity.getHeading() == Heading.EAST ? amount : -amount);
         }
+
+        return transition;
+
+    }
+
+    private RotateTransition axialMove() {
+
+        RotateTransition transition = new RotateTransition();
+        transition.setNode(xform);
+        transition.setAxis(Rotate.Y_AXIS);
+
+        double amount = type == TURN_RIGHT ? -90 : 90;
+
+        transition.setByAngle(amount);
+
+        return transition;
+
     }
 
     private void movePeripherals(double speed) {
