@@ -38,11 +38,18 @@ public class RoverModel extends Model {
             Cylinder wheel = new Cylinder(7, 6);
             wheel.setRotationAxis(Rotate.X_AXIS);
             wheel.setRotate(90);
+//            wheel.rotateProperty().set(90);
+//            wheel.setRotationAxis(Rotate.Z_AXIS);
+//            wheel.setRotate(90);
+//            wheel.setRotate(1800);
             wheel.setTranslateX(-27 + ((i % 3) * 27));
             wheel.setTranslateY(this.baseY);
             wheel.setTranslateZ(i < 3 ? -31.5 : 31.5);
             wheel.setMaterial(wheelMaterial);
-            roverWheelXforms[i % 3].getChildren().add(wheel);
+            Xform rotatedWheel = new Xform();
+            rotatedWheel.getChildren().add(wheel);
+            rotatedWheel.setRotationAxis(Rotate.Z_AXIS);
+            roverWheelXforms[i % 3].getChildren().add(rotatedWheel);
 
             Torus tyre = new Torus(7, 3);
             tyre.setTranslateX(-27 + ((i % 3) * 27));

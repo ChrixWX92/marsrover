@@ -3,7 +3,6 @@ package marsrover;
 import javafx.application.Application;
 import javafx.application.Platform;
 import marsrover.menu.menus.WelcomePane;
-import marsrover.model.Movement;
 import marsrover.model.Xform;
 
 import javax.swing.*;
@@ -118,9 +117,7 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(javafx.stage.Stage primaryStage) throws InterruptedException {
-
-//        System.out.println("start()");
+    public void start(javafx.stage.Stage primaryStage) {
 
         stage = new Stage();
         World world = new World();
