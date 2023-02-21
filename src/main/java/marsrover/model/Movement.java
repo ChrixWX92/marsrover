@@ -4,7 +4,6 @@ import javafx.animation.*;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 import marsrover.entity.Entity;
-import marsrover.entity.Heading;
 import marsrover.entity.entities.Rover;
 
 import java.util.Arrays;
@@ -46,7 +45,7 @@ public class Movement implements Runnable {
             case FORWARD, BACKWARD -> this.transition = linearMove(calculateSpeed(5));
             case TURN_RIGHT, TURN_LEFT -> this.transition = axialMove(calculateSpeed(5));
         }
-                movePeripherals(speed); //TODO: Move wheels too
+        movePeripherals();
 
         // Running the transition  - this runnable will not finish executing until the transition has finished running
         this.transition.setOnFinished((e) -> active = false);
@@ -125,14 +124,13 @@ public class Movement implements Runnable {
 
     }
 
-    private void movePeripherals(double speed) {
+    private void movePeripherals() {
         if (entity instanceof Rover) {
-//            double distance = (((Cylinder) xform.getChildren().get(4)).getRadius() * 2) * Math.PI;
             for (int j = 1; j < 4; j++) {
                 RotateTransition transition = new RotateTransition();
                 transition.setNode(xform.getChildren().get(j));
-//                transition.setAxis(Rotate.Y_AXIS);
-                transition.setByAngle(-360);
+                transition.setByAngle(-(distance * Math.PI));
+                transition.setDuration(this.transition.getTotalDuration());
                 transition.play();
             }
         }
