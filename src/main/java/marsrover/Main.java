@@ -12,6 +12,8 @@ import java.io.InputStreamReader;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+// May need to add -XstartOnFirstThread to program arguments
+
 public class Main extends Application {
 
     final Xform axisGroup = new Xform();
@@ -134,10 +136,14 @@ public class Main extends Application {
 
         menu();
 
-        try {
-            taskQueue.take().run();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (!taskQueue.isEmpty()) {
+
+            try {
+                taskQueue.take().run();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
         }
 
         runTerminalThread(world);

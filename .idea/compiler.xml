@@ -9,8 +9,5 @@
         <module name="marsrover" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="marsrover" target="16" />
-    </bytecodeTargetLevel>
   </component>
 </project>
